@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
-const bcrypt=require('bcrypt');
-const { use } = require("../routes/auth");
+const startegery = Object.freeze({
+  0: 'google',
+  1: 'local',
+})
+
 const info = new mongoose.Schema(
   {
     email: {
@@ -18,24 +21,17 @@ const info = new mongoose.Schema(
       type: String,
       require: true,
       trim: true,
-    }
+    },
+    startegery:{
+      enum: Object.values(startegery)
+    },
+    googleId:String
   },
   { timestamps: true }
 );
-info.pre('save',async function  (next) {
-    // bcrypt.hash(this.password, 10, function(err, hash) {
-    //     if(err) next(err)
-    //    if(hash)
-    //    {
-    //        this.password=hash;
-    //        console.log(hash+" "+this.password)
-    //        next()
-    //    }
-    // });
-   const salt=await bcrypt.genSalt()
-   this.password=await bcrypt.hash(this.password,salt)
-   next()
-})
+
+Object.assign(info.statics,{startegery})
+
 info.statics.loginUser=function(email){
   return new Promise((resolve,reject)=>{
     this.findOne({email})

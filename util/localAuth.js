@@ -11,8 +11,13 @@ module.exports={
      return token
     },
     verifyJwt:(req,res,next)=>{
-        const token= req.cookies.token 
+        let token= req.cookies.token 
         // this token can be get by auth bearer also
+        const header=req.headers['authorization']
+        if(header!== undefined)
+        {
+            token=header.split(" ")[1]
+        }        
         if(token)
         {
             jwt.verify(token,process.env.SECRET,(err,decodedToken)=>{
@@ -50,5 +55,6 @@ module.exports={
         else{
            return res.status(403).json({error:"login to view"})
         }
-    }
+    },
+    
 }
